@@ -1,53 +1,47 @@
-// const express = require('express');
-// const mongoose = require('mongoose');
-// const bodyParser = require('body-parser');
-// const adminRoutes = require('./routes/adminRoutes');
-// const candidateRoutes = require('./routes/candidateRoutes');
-// const applicationRoutes = require('./routes/applicationRoutes');
-// const vacancyRoutes = require('./routes/vacancyRoutes');
-// const questionRoutes = require('./routes/questionRoutes');
-// const cors = require('cors');
-// const path = require('path');
+// File: index.js
 
-// const db = require('./config/database.js');
-// require('dotenv').config();
-// const app = express();
-// app.use(express.urlencoded({ extended: true }));
+import express from 'express';
+import mongoose from 'mongoose';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import adminRoutes from './routes/adminRoutes';
+import candidateRoutes from './routes/candidateRoutes';
+import applicationRoutes from './routes/applicationRoutes';
+import vacancyRoutes from './routes/vacancyRoutes';
+import questionRoutes from './routes/questionRoutes';
+import db from './config/database.js';
+import dotenv from 'dotenv';
 
-// app.use(cors());
-// app.use(bodyParser.json());
-// app.use('/admin', adminRoutes);
-// app.use('/candidates', candidateRoutes);
-// app.use('/applications', applicationRoutes);
-// app.use('/vacancies', vacancyRoutes);
-// app.use('/questions', questionRoutes);
-// app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Make sure this line is present
+dotenv.config(); // Load environment variables from .env file
 
-// // mongoose.connect('YOUR_MONGODB_URI', { useNewUrlParser: true, useUnifiedTopology: true })
-// //     .then(() => {
-// //         console.log('Database connected');
-// //         app.listen(5500, () => {
-// //             console.log('Server is running on port 5500');
-// //         });
-// //     })
-// //     .catch(err => console.error(err));
+const app = express();
 
-// db();
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 
+// Initialize Database
+db(); // Call your database connection function
 
-// // back end prtda basdamasi ucun
-// const PORT = process.env.PORT || 5501;
+// Routes
+app.use('/admin', adminRoutes);
+app.use('/candidates', candidateRoutes);
+app.use('/applications', applicationRoutes);
+app.use('/vacancies', vacancyRoutes);
+app.use('/questions', questionRoutes);
 
-// app.listen(PORT, () => {
-//     try {
-        
-//         console.log(`Server is running on port ${PORT}`);
-//     }catch (error) {
-//         console.log(error)
-//     }
-// });
-export default function handler(req, res) {
+// Serve static files
+app.use('/uploads', express.static('uploads'));
+
+// Default route
+app.get('/', (req, res) => {
     res.status(200).json({ message: "Hello from Vercel!" });
-}
+});
 
-// module.exports = app
+// Export the serverless function
+export default async function handler(req, res) {
+    await new Promise((resolve) => {
+        app(req, res, resolve); // Call the express app with the request and response
+    });
+}
