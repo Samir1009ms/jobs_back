@@ -39,7 +39,12 @@ db();
 const PORT = process.env.PORT || 5501;
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    try {
+        
+        console.log(`Server is running on port ${PORT}`);
+    }catch (error) {
+        console.log(error)
+    }
 });
 
 module.exports = app
