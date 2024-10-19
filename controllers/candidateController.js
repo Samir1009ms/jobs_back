@@ -14,17 +14,17 @@ const storage = multer.diskStorage({
 });
 
 // Initialize multer for CV upload
-const upload = multer({
-    storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
-    fileFilter: (req, file, cb) => {
-        if (file.mimetype === 'application/pdf') {
-            cb(null, true);
-        } else {
-            cb(new Error('Only PDF files are allowed!'), false);
-        }
-    }
-});
+// const upload = multer({
+//     storage: storage,
+//     limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
+//     fileFilter: (req, file, cb) => {
+//         if (file.mimetype === 'application/pdf') {
+//             cb(null, true);
+//         } else {
+//             cb(new Error('Only PDF files are allowed!'), false);
+//         }
+//     }
+// });
 
 // Create candidate with test answers and CV upload
 // Create candidate with test answers and CV upload
@@ -64,27 +64,77 @@ const upload = multer({
 //         }
 //     }
 // ];
-exports.createCandidate = async (req, res) => {
-    const { name, email, phone, correctAnswersCount, incorrectAnswersCount, id } = req.body;
+// exports.createCandidate = async (req, res) => {
+//     const { name, email, phone, correctAnswersCount, incorrectAnswersCount, id } = req.body;
 
-    const candidate = new Candidate({
-        name,
-        email,
-        phone,
-        vacancyId: id,
-        testAnswers: {
-            correct: parseInt(correctAnswersCount, 10) || 0,
-            incorrect: parseInt(incorrectAnswersCount, 10) || 0,
-        },
-        cv: 'sample-path', // Mock CV path for now
-    });
+//     const candidate = new Candidate({
+//         name,
+//         email,
+//         phone,
+//         vacancyId: id,
+//         testAnswers: {
+//             correct: parseInt(correctAnswersCount, 10) || 0,
+//             incorrect: parseInt(incorrectAnswersCount, 10) || 0,
+//         },
+//         cv: 'sample-path', // Mock CV path for now
+//     });
 
-    try {
-        const savedCandidate = await candidate.save();
-        res.status(201).json({ message: 'Müraciət uğurla qeyd edildi.', code: 201 });
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+//     try {
+//         const savedCandidate = await candidate.save();
+//         res.status(201).json({ message: 'Müraciət uğurla qeyd edildi.', code: 201 });
+//     } catch (error) {
+//         res.status(400).json({ message: error.message });
+//     }
+// };
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype === 'application/pdf') {
+            cb(null, true);
+        } else {
+            cb(new Error('Only PDF files are allowed!'), false);
+        }
     }
+}).single('cv');
+
+exports.createCandidate = async (req, res) => {
+    upload(req, res, async function (err) {
+        if (err instanceof multer.MulterError) {
+            return res.status(400).json({ message: err.message }); // Multer-specific errors
+        } else if (err) {
+            return res.status(400).json({ message: err.message }); // General errors
+        }
+
+        const { name, email, phone, correctAnswersCount, incorrectAnswersCount, id } = req.body;
+
+        if (!req.file) {
+            return res.status(400).json({ message: 'No CV uploaded.' });
+        }
+
+        // Store the path of the uploaded CV
+        const cvPath = req.file.path;
+
+        // Create a new candidate instance
+        const candidate = new Candidate({
+            name,
+            email,
+            phone,
+            vacancyId: id,
+            testAnswers: {
+                correct: parseInt(correctAnswersCount, 10) || 0,
+                incorrect: parseInt(incorrectAnswersCount, 10) || 0,
+            },
+            cv: cvPath,
+        });
+
+        try {
+            const savedCandidate = await candidate.save();
+            return res.status(201).json({ message: 'Müraciət uğurla qeyd edildi.', code: 201 });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    });
 };
 // Retrieve all candidates
 exports.getAllCandidates = async (req, res) => {
