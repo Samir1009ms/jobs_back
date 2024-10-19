@@ -1,11 +1,16 @@
 const Candidate = require('../models/candidateModel');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
-// Configure storage for multer
+const uploadsDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Specify the directory to save uploaded files
+        cb(null, uploadsDir); // Use the uploads directory
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + file.originalname; // Generate a unique filename
@@ -13,25 +18,21 @@ const storage = multer.diskStorage({
     }
 });
 
-
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, 
+    limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
     fileFilter: (req, file, cb) => {
         if (file.mimetype === 'application/pdf') {
-            cb(null, true);
+            cb(null, true); // Accept PDF files
         } else {
-            cb(new Error('Only PDF files are allowed!'), false);
+            cb(new Error('Only PDF files are allowed!'), false); // Reject non-PDF files
         }
-    },
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
     }
-    
-}).single('cv');
+}).single('cv'); // Expect a single file with the field name 'cv'
 
-exports.createCandidate = async (req, res) => {
-    upload(req, res, async function (err) {
+// Create candidate with CV upload
+exports.createCandidate = (req, res) => {
+    upload(req, res, async (err) => {
         if (err instanceof multer.MulterError) {
             return res.status(400).json({ message: err.message }); // Multer-specific errors
         } else if (err) {
@@ -57,7 +58,7 @@ exports.createCandidate = async (req, res) => {
                 correct: parseInt(correctAnswersCount, 10) || 0,
                 incorrect: parseInt(incorrectAnswersCount, 10) || 0,
             },
-            cv: cvPath,
+            cv: cvPath, // Store the CV path
         });
 
         try {
@@ -68,6 +69,7 @@ exports.createCandidate = async (req, res) => {
         }
     });
 };
+
 // Retrieve all candidates
 exports.getAllCandidates = async (req, res) => {
     try {
