@@ -16,8 +16,15 @@ dotenv.config(); // Load environment variables from .env file
 
 const app = express();
 
-// Middleware
-app.use(cors());
+const corsOptions = {
+    origin: '*',
+    methods: 'GET,POST,PUT,DELETE',
+    credentials: true,
+    allowedHeaders: '*',
+
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -31,17 +38,19 @@ app.use('/applications', applicationRoutes);
 app.use('/vacancies', vacancyRoutes);
 app.use('/questions', questionRoutes);
 
-// Serve static files
 app.use('/uploads', express.static('uploads'));
 
-// Default route
 app.get('/', (req, res) => {
-    res.status(200).json({ message: "Hello from Vercel!" });
+     res.status(200).json({ message: 'Welcome to my application.' })
+    var userAgent = req.headers['user-agent'];
+    console.log(userAgent);
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    console.log('IP address:', ip);
+    console.log("s")
 });
 
-// Export the serverless function
 export default async function handler(req, res) {
     await new Promise((resolve) => {
-        app(req, res, resolve); // Call the express app with the request and response
+        app(req, res, resolve); 
     });
 }
