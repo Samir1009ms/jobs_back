@@ -40,7 +40,7 @@ exports.createCandidate = (req, res) => {
         const { name, email, phone, correctAnswersCount, incorrectAnswersCount, id } = req.body;
 
         if (!req.file) {
-            return res.status(400).json({ message: 'No CV uploaded.' });
+            return res.status(400).json({ message: 'CV faylı yoxdur' });
         }
 
         // Firebase Storage'a dosya yükle
@@ -55,7 +55,7 @@ exports.createCandidate = (req, res) => {
         });
 
         stream.on('error', (error) => {
-            return res.status(500).json({ message: 'Dosya yüklenirken bir hata oluştu: ' + error.message });
+            return res.status(500).json({ message: 'Fayl yüklənərkən xəta baş verdi ' + error.message });
         });
 
         stream.on('finish', async () => {
