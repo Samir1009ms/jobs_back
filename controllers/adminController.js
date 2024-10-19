@@ -1,5 +1,5 @@
 const Vacancy = require('../models/vacancyModel');
-const Application = require('../models/applicationModel');
+const Candidate = require('../models/candidateModel');
 
 exports.getAllVacanciesAdmin = async (req, res) => {
     try {
@@ -14,7 +14,7 @@ exports.getVacancyApplications = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const applications = await Application.find({ vacancyId: id });
+        const applications = await Candidate.find({ vacancyId: id });
         res.json(applications);
     } catch (error) {
         res.status(500).json({ message: error.message });

@@ -13,6 +13,7 @@ const candidateSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true },
+    vacancyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Vacancy', required: true },
     testAnswers: {
         correct: { type: Number, required: true }, // Count of correct answers
         incorrect: { type: Number, required: true }, // Count of incorrect answers

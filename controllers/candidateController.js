@@ -134,7 +134,7 @@ exports.createCandidate = [
     upload.single('cv'), // Middleware to handle CV file upload
     async (req, res) => {
         // Access all fields directly from form-data
-        const { name, email, phone, correctAnswersCount, incorrectAnswersCount } = req.body;
+        const { name, email, phone, correctAnswersCount, incorrectAnswersCount,id } = req.body;
 
         // Check if the file is uploaded
         if (!req.file) {
@@ -149,6 +149,7 @@ exports.createCandidate = [
             name,
             email,
             phone,
+            vacancyId: id,
             testAnswers: {
                 correct: parseInt(correctAnswersCount, 10) || 0, // Count of correct answers
                 incorrect: parseInt(incorrectAnswersCount, 10) || 0, // Count of incorrect answers
