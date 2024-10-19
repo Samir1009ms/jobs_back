@@ -13,89 +13,21 @@ const storage = multer.diskStorage({
     }
 });
 
-// Initialize multer for CV upload
-// const upload = multer({
-//     storage: storage,
-//     limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
-//     fileFilter: (req, file, cb) => {
-//         if (file.mimetype === 'application/pdf') {
-//             cb(null, true);
-//         } else {
-//             cb(new Error('Only PDF files are allowed!'), false);
-//         }
-//     }
-// });
 
-// Create candidate with test answers and CV upload
-// Create candidate with test answers and CV upload
-// exports.createCandidate = [
-//     upload.single('cv'), // Middleware to handle CV file upload
-//     async (req, res) => {
-//         // Access all fields directly from form-data
-//         const { name, email, phone, correctAnswersCount, incorrectAnswersCount,id } = req.body;
-
-//         // Check if the file is uploaded
-//         if (!req.file) {
-//             return res.status(400).json({ message: 'No CV uploaded.' });
-//         }
-
-//         // Store the path of the uploaded CV
-//         const cvPath = req.file.path;
-
-//         // Create a new candidate instance
-//         const candidate = new Candidate({
-//             name,
-//             email,
-//             phone,
-//             vacancyId: id,
-//             testAnswers: {
-//                 correct: parseInt(correctAnswersCount, 10) || 0, // Count of correct answers
-//                 incorrect: parseInt(incorrectAnswersCount, 10) || 0, // Count of incorrect answers
-//             },
-//             cv: cvPath, // Store the CV path in the candidate record
-//         });
-
-//         try {
-//             // Save the candidate to the database
-//             const savedCandidate = await candidate.save();
-//             res.status(201).json({message: 'Müraciət ugurla qeyd edildi.',code:201}); // Return the saved candidate
-//         } catch (error) {
-//             res.status(400).json({ message: error.message }); // Return error message
-//         }
-//     }
-// ];
-// exports.createCandidate = async (req, res) => {
-//     const { name, email, phone, correctAnswersCount, incorrectAnswersCount, id } = req.body;
-
-//     const candidate = new Candidate({
-//         name,
-//         email,
-//         phone,
-//         vacancyId: id,
-//         testAnswers: {
-//             correct: parseInt(correctAnswersCount, 10) || 0,
-//             incorrect: parseInt(incorrectAnswersCount, 10) || 0,
-//         },
-//         cv: 'sample-path', // Mock CV path for now
-//     });
-
-//     try {
-//         const savedCandidate = await candidate.save();
-//         res.status(201).json({ message: 'Müraciət uğurla qeyd edildi.', code: 201 });
-//     } catch (error) {
-//         res.status(400).json({ message: error.message });
-//     }
-// };
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
+    limits: { fileSize: 5 * 1024 * 1024 }, 
     fileFilter: (req, file, cb) => {
         if (file.mimetype === 'application/pdf') {
             cb(null, true);
         } else {
             cb(new Error('Only PDF files are allowed!'), false);
         }
+    },
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
     }
+    
 }).single('cv');
 
 exports.createCandidate = async (req, res) => {
