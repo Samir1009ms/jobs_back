@@ -49,13 +49,13 @@ app.get('/', (req, res) => {
     console.log("s")
 });
 
-export default async function handler(req, res) {
-    await new Promise((resolve) => {
-        app(req, res, resolve); 
-    });
-}
+// export default async function handler(req, res) {
+//     await new Promise((resolve) => {
+//         app(req, res, resolve); 
+//     });
+// }
 
-// const PORT = process.env.PORT || 3000; // Default port
-// app.listen(PORT, () => {
-//     console.log(`Server is running on port ${PORT}`);
-// });
+const PORT = process.env.PORT || 3000; // Default port
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});

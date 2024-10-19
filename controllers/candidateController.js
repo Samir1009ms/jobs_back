@@ -60,6 +60,8 @@ exports.createCandidate = (req, res) => {
 
         stream.on('finish', async () => {
             // Firebase Storage'da dosya yüklendikten sonra, yeni aday örneği oluştur
+            const fileURL = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
+
             const candidate = new Candidate({
                 name,
                 email,
@@ -69,7 +71,7 @@ exports.createCandidate = (req, res) => {
                     correct: parseInt(correctAnswersCount, 10) || 0,
                     incorrect: parseInt(incorrectAnswersCount, 10) || 0,
                 },
-                cv: `https://storage.googleapis.com/${bucket.name}/${fileName}`, // Yüklenen dosyanın URL'si
+                cv: fileURL, // Yüklenen dosyanın URL'si
             });
 
             try {
