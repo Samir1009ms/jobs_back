@@ -21,11 +21,16 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
-    fileFilter: (req, file, cb) => {
-        if (file.mimetype === 'application/pdf') {
-            cb(null, true); // Accept PDF files
+    fileFilter: async(req, file, cb) => {
+        const {email}=req.body
+        const existingCandidate = await Candidate.findOne({email });
+        if(existingCandidate) {
+            return cb(new Error('Bu email ilə bir müraciət artıq qeyd edilib'), false);
+        }
+        if (file.mimetype === 'application/pdf' || file.mimetype === 'application/msword' || file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            cb(null, true);
         } else {
-            cb(new Error('Only PDF files are allowed!'), false); // Reject non-PDF files
+            cb(new Error('PDF və ya Word  faylları qəbul edilməlidir'), false); 
         }
     }
 }).single('cv'); // Expect a single file with the field name 'cv'
@@ -65,7 +70,7 @@ exports.createCandidate = (req, res) => {
             const savedCandidate = await candidate.save();
             return res.status(201).json({ message: 'Müraciət uğurla qeyd edildi.', code: 201 });
         } catch (error) {
-            return res.status(400).json({ message: error.message });
+            return res.status(400).json({ message: "Müraciət qeyd edilərkən xəta baş verdi. Lütfən yenidən cəhd edin" });
         }
     });
 };

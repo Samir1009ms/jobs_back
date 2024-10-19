@@ -1,16 +1,16 @@
 // File: index.js
 
-import express from 'express';
-import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import adminRoutes from './routes/adminRoutes';
-import candidateRoutes from './routes/candidateRoutes';
-import applicationRoutes from './routes/applicationRoutes';
-import vacancyRoutes from './routes/vacancyRoutes';
-import questionRoutes from './routes/questionRoutes';
-import db from './config/database.js';
-import dotenv from 'dotenv';
+const express = require('express'); 
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const adminRoutes = require('./routes/adminRoutes');
+const candidateRoutes = require('./routes/candidateRoutes');
+const applicationRoutes = require('./routes/applicationRoutes');
+const vacancyRoutes = require('./routes/vacancyRoutes');
+const questionRoutes = require('./routes/questionRoutes');
+const db = require('./config/database.js');
+const dotenv = require('dotenv');
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -49,8 +49,13 @@ app.get('/', (req, res) => {
     console.log("s")
 });
 
-export default async function handler(req, res) {
-    await new Promise((resolve) => {
-        app(req, res, resolve); 
-    });
-}
+// export default async function handler(req, res) {
+//     await new Promise((resolve) => {
+//         app(req, res, resolve); 
+//     });
+// }
+
+const PORT = process.env.PORT || 3000; // Default port
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});

@@ -1,5 +1,5 @@
-import express from 'express';
-import candidateController from '../controllers/candidateController';
+const express = require('express');
+const candidateController = require('../controllers/candidateController');
 
 const router = express.Router();
 // Candidate Routes
